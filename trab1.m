@@ -1,9 +1,9 @@
 clear
 
-N = 8; %board size
+N = 20; %board size
 maximum_colisions = N * (N-1)/2
 pop_size = 50;
-gen_number = 11;
+gen_number = 51;
 population  = zeros(pop_size, N);
 fitness = [pop_size];
 mutation_probability = 0.2;
@@ -11,6 +11,7 @@ parents_considered = 5;
 optimal_solution = 0;
 gen_count = 2;
 generation_most_fit = zeros(1,gen_number -1);
+generation_median = zeros(1,gen_number -1);
 
 % First random generation eneration
 for j = 1:pop_size
@@ -26,6 +27,7 @@ sorted_population = population(fitnessSort,:);
 
 generation(1,:,:) = sorted_population;
 generation_fitness(1,:) = fitness;
+generation_median(1) = median(fitness);
 
 while(gen_count < gen_number)
 %     Getting 5 parents and choosing the two best
@@ -61,11 +63,22 @@ while(gen_count < gen_number)
 %     Add to generation and generation fitness history
     generation(gen_count,:,:) = new_generation;
     generation_fitness(gen_count,:) = fitness;
+    generation_median(gen_count) = median(fitness);
     generation_most_fit(gen_count) = fitness(1);
     
     gen_count = gen_count + 1
 end
+
+% Plots
+
 figure(1)
-histogram(generation_fitness, 0:maximum_colisions )
-figure(2)
+stem(generation_median);
+hold on
 stem(generation_most_fit)
+hold off
+figure(2)
+x = categorical({'10', '20', '50'});
+bar(x,[generation_median(10), generation_median(20), generation_median(50)],'FaceColor',[0 .5 .5])
+hold on
+bar(x,[generation_most_fit(10), generation_most_fit(20), generation_most_fit(50)])
+hold off
